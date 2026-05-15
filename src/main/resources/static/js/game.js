@@ -2,6 +2,10 @@
 let scene, camera, renderer, globe, controls;
 let targetCountryId = null;
 let allCountries = [];
+let userGuesses = [];
+let usedCountryIds = new Set();
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
 // Inicialização
 async function init() {
@@ -41,6 +45,7 @@ async function init() {
 
     // Eventos
     window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener('mousemove', onMouseMove, false);
     document.getElementById('btn-guess').addEventListener('click', handleGuess);
 
     animate();
@@ -62,6 +67,7 @@ function createGlobe() {
     });
 
     globe = new THREE.Mesh(geometry, material);
+    globe.rotation.y = Math.PI; // Rotação de 180 graus para alinhar o meridiano 0
     scene.add(globe);
 
     // Atmosfera
@@ -116,9 +122,11 @@ function setupAutocomplete() {
         }
 
         const filtered = allCountries.filter(c => 
-            c.name.toLowerCase().includes(val) || 
-            c.iso2.toLowerCase().includes(val)
-        );
+            !usedCountryIds.has(c.id) && (
+                c.name.toLowerCase().includes(val) || 
+                c.iso2.toLowerCase().includes(val)
+            )
+        ).slice(0, 10);
         
         if (filtered.length > 0) {
             list.classList.remove('hidden');
@@ -171,30 +179,37 @@ async function handleGuess() {
         const data = await response.json();
         
         addGuessToHistory(data);
+        usedCountryIds.add(parseInt(guessedId));
         
         const country = allCountries.find(c => c.id == guessedId);
         if (country) {
-            markOnGlobe(country.lat, country.lon, data.color);
+            markOnGlobe(country.lat, country.lon, data.color, country.name, country.flagUrl);
         }
         
         input.value = '';
         document.getElementById('selected-country-id').value = '';
         
         if (data.correct) {
-            showCustomModal("VOCÊ VENCEU!", `Parabéns! O país era realmente ${data.countryName}.`, "🎉", true);
+            showCustomModal("VOCÊ VENCEU!", `Parabéns! O país era realmente ${data.countryName}.`, data.flagUrl, true);
         }
     } catch (error) {
         console.error("Erro ao processar palpite:", error);
     }
 }
 
-function showCustomModal(title, message, icon = "ℹ️", reloadOnClose = false) {
+function showCustomModal(title, message, iconOrUrl = "ℹ️", reloadOnClose = false) {
     const container = document.getElementById('modal-container');
     const content = document.getElementById('modal-content');
+    const iconDiv = document.getElementById('modal-icon');
     
     document.getElementById('modal-title').innerText = title;
     document.getElementById('modal-message').innerText = message;
-    document.getElementById('modal-icon').innerText = icon;
+    
+    if (iconOrUrl && iconOrUrl.startsWith('http')) {
+        iconDiv.innerHTML = `<img src="${iconOrUrl}" class="w-full h-full object-cover">`;
+    } else {
+        iconDiv.innerHTML = iconOrUrl;
+    }
     
     container.classList.remove('hidden');
     setTimeout(() => {
@@ -215,63 +230,119 @@ function showCustomModal(title, message, icon = "ℹ️", reloadOnClose = false)
 
 function addGuessToHistory(data) {
     const history = document.getElementById('guess-history');
-    if (history.children[0] && history.children[0].tagName === 'P') {
-        history.innerHTML = '';
-    }
-
-    const item = document.createElement('div');
-    item.className = 'flex items-center justify-between p-3 bg-white/5 rounded-lg border-l-4 transition-all hover:bg-white/10';
-    item.style.borderLeftColor = data.color;
     
-    item.innerHTML = `
-        <div class="flex items-center gap-3">
-            <img src="${data.flagUrl}" class="w-8 h-5 object-cover rounded shadow-sm">
-            <div>
-                <p class="font-bold text-sm">${data.countryName}</p>
-                <p class="text-[10px] text-gray-400 uppercase font-semibold">${data.bearing} • ${data.distanceKm} KM</p>
+    // Adicionar à lista global de palpites
+    userGuesses.push(data);
+    
+    // Ordenar: menor distância primeiro
+    userGuesses.sort((a, b) => a.distanceKm - b.distanceKm);
+    
+    // Limpar e Re-renderizar
+    history.innerHTML = '';
+    
+    userGuesses.forEach(guess => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between p-3 bg-white/5 rounded-lg border-l-4 transition-all hover:bg-white/10';
+        item.style.borderLeftColor = guess.color;
+        
+        item.innerHTML = `
+            <div class="flex items-center gap-3">
+                <img src="${guess.flagUrl}" class="w-8 h-5 object-cover rounded shadow-sm">
+                <div>
+                    <p class="font-bold text-sm">${guess.countryName}</p>
+                    <p class="text-[10px] text-gray-400 uppercase font-semibold">${guess.bearing} • ${guess.distanceKm} KM</p>
+                </div>
             </div>
-        </div>
-        <div class="w-3 h-3 rounded-full" style="background-color: ${data.color}"></div>
-    `;
-
-    history.prepend(item);
+            <div class="w-3 h-3 rounded-full" style="background-color: ${guess.color}"></div>
+        `;
+        history.appendChild(item);
+    });
 }
 
-function markOnGlobe(lat, lon, color) {
+function markOnGlobe(lat, lon, color, name, flagUrl) {
     if (lat === null || lon === null || isNaN(lat) || isNaN(lon)) {
         console.warn("Coordenadas inválidas para este país.");
         return;
     }
 
-    const radius = 150;
+    const radius = 154;
     const phi = (90 - lat) * (Math.PI / 180);
     const theta = (lon + 180) * (Math.PI / 180);
 
-    const x = -(radius * Math.sin(phi) * Math.cos(theta));
-    const z = (radius * Math.sin(phi) * Math.sin(theta));
-    const y = (radius * Math.cos(phi));
+    const x = -radius * Math.sin(phi) * Math.cos(theta);
+    const y = radius * Math.cos(phi);
+    const z = radius * Math.sin(phi) * Math.sin(theta);
 
-    // Criar marcador
-    const markerGeo = new THREE.SphereGeometry(2, 16, 16);
+    const markerGeo = new THREE.ConeGeometry(2, 6, 8);
     const markerMat = new THREE.MeshBasicMaterial({ color: color });
     const marker = new THREE.Mesh(markerGeo, markerMat);
     marker.position.set(x, y, z);
-    scene.add(marker);
+    
+    // Guardar metadados para o tooltip
+    marker.userData = { name: name, flagUrl: flagUrl, isMarker: true };
+    
+    marker.lookAt(0, 0, 0);
+    marker.rotateX(Math.PI / 2);
+    
+    globe.add(marker);
 
-    // Glow
-    const glowGeo = new THREE.SphereGeometry(4, 16, 16);
-    const glowMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.3 });
+    // Efeito de brilho circular
+    const glowGeo = new THREE.SphereGeometry(3, 16, 16);
+    const glowMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.5 });
     const glow = new THREE.Mesh(glowGeo, glowMat);
     glow.position.set(x, y, z);
-    scene.add(glow);
+    globe.add(glow);
 
-    // Mover a câmera para o ponto (Ajuste para não ficar dentro do globo)
-    const targetPos = new THREE.Vector3(x, y, z).normalize().multiplyScalar(450);
+    // Câmera focando no pino (convertendo posição local para mundial)
+    scene.updateMatrixWorld(); // Forçar atualização das posições
+    const worldPos = new THREE.Vector3();
+    marker.getWorldPosition(worldPos);
     
-    // Usar uma transição mais controlada
-    camera.position.set(targetPos.x, targetPos.y, targetPos.z);
+    const cameraTarget = worldPos.clone().normalize().multiplyScalar(450);
+    camera.position.copy(cameraTarget);
     camera.lookAt(0, 0, 0);
     controls.update();
+}
+
+function onMouseMove(event) {
+    // Normalizar posição do mouse
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // Atualizar posição visual do tooltip
+    const tooltip = document.getElementById('globe-tooltip');
+    if (!tooltip) return; // Proteção contra null
+    
+    tooltip.style.left = (event.clientX + 15) + 'px';
+    tooltip.style.top = (event.clientY + 15) + 'px';
+
+    // Raycasting em toda a cena para garantir captura
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(scene.children, true);
+
+    let markerData = null;
+    for (let intersect of intersects) {
+        // Verificar se o objeto ou o pai dele é um marcador
+        let obj = intersect.object;
+        if (obj.userData && obj.userData.isMarker) {
+            markerData = obj.userData;
+            break;
+        }
+    }
+
+    if (markerData) {
+        document.getElementById('tooltip-name').innerText = markerData.name;
+        document.getElementById('tooltip-flag').src = markerData.flagUrl;
+        tooltip.classList.remove('hidden');
+        tooltip.style.opacity = '1';
+        document.body.style.cursor = 'pointer';
+    } else {
+        tooltip.style.opacity = '0';
+        setTimeout(() => {
+            if (tooltip.style.opacity === '0') tooltip.classList.add('hidden');
+        }, 200);
+        document.body.style.cursor = 'default';
+    }
 }
 
 function onWindowResize() {

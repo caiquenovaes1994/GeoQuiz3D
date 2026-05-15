@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geo-Quiz 3D | Explore o Mundo</title>
+    <title>Geo-Quiz 3D | Desafio Global</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -64,10 +65,19 @@
             </div>
         </header>
 
-        <!-- Main Content (Guessing) -->
-        <main class="flex justify-center">
-            <div class="glass p-8 w-full max-w-xl pointer-events-auto">
-                <div class="space-y-6">
+        <!-- Bottom UI (Histórico + Palpite) -->
+        <div class="flex items-end justify-between gap-8 pointer-events-none">
+            <!-- Histórico (Esquerda) -->
+            <div id="history-container" class="glass p-6 w-80 space-y-4 max-h-72 overflow-y-auto custom-scrollbar pointer-events-auto shadow-2xl">
+                <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Histórico de Tentativas</p>
+                <div id="guess-history" class="space-y-3">
+                    <p class="text-gray-500 text-sm italic">Nenhum palpite ainda.</p>
+                </div>
+            </div>
+
+            <!-- Painel de Palpite (Centro/Direita) -->
+            <main class="flex-1 max-w-xl pointer-events-auto">
+                <div class="glass p-8 space-y-6 shadow-2xl">
                     <div class="relative">
                         <label class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2 block">Qual é o seu palpite?</label>
                         <div class="relative group">
@@ -85,26 +95,24 @@
                         Confirmar Palpite
                     </button>
                 </div>
-            </div>
-        </main>
+            </main>
 
-        <!-- Footer / Logs -->
-        <footer class="flex justify-start">
-            <div id="history-container" class="glass p-6 w-96 space-y-4 max-h-64 overflow-y-auto custom-scrollbar">
-                <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Histórico de Tentativas</p>
-                <div id="guess-history" class="space-y-3">
-                    <!-- Palpites aparecerão aqui -->
-                    <p class="text-gray-500 text-sm italic">Nenhum palpite ainda.</p>
-                </div>
-            </div>
-        </footer>
+            <!-- Espaçador invisível para equilibrar o layout no desktop -->
+            <div class="w-80 hidden xl:block"></div>
+        </div>
+    </div>
+
+    <!-- Tooltip para os pins -->
+    <div id="globe-tooltip" class="fixed pointer-events-none z-[150] glass p-2 px-3 flex items-center gap-2 hidden opacity-0 transition-opacity duration-200">
+        <img id="tooltip-flag" src="" class="w-6 h-4 object-cover rounded shadow-sm">
+        <span id="tooltip-name" class="text-xs font-bold text-white whitespace-nowrap"></span>
     </div>
 
     <!-- Modal -->
     <div id="modal-container" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div class="glass p-8 w-full max-w-md scale-95 transition-transform duration-300 transform" id="modal-content">
             <div class="text-center space-y-6">
-                <div id="modal-icon" class="w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg">
+                <div id="modal-icon" class="w-32 h-20 mx-auto rounded-xl flex items-center justify-center text-4xl shadow-2xl overflow-hidden glass border-white/20">
                     🎉
                 </div>
                 <div>
