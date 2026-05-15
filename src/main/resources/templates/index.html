@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geo-Quiz 3D | Explore o Mundo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #050505;
+            font-family: 'Outfit', sans-serif;
+            color: white;
+        }
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .ui-overlay {
+            position: relative;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .pointer-events-auto {
+            pointer-events: auto;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+        .glow-text {
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <div class="ui-overlay min-h-screen flex flex-col p-8 justify-between">
+        <!-- Header -->
+        <header class="flex justify-between items-center">
+            <div class="glass p-4 px-8 flex items-center gap-4">
+                <div class="w-10 h-10 bg-gradient-to-tr from-blue-500 to-emerald-400 rounded-xl shadow-lg shadow-blue-500/20"></div>
+                <h1 class="text-2xl font-extrabold tracking-tight glow-text">GEOQUIZ <span class="font-light text-blue-400">3D</span></h1>
+            </div>
+            
+            <div class="glass p-4 px-6 pointer-events-auto">
+                <div class="flex items-center gap-6">
+                    <div class="text-right">
+                        <p class="text-xs text-gray-400 uppercase tracking-widest font-semibold">Objetivo</p>
+                        <p id="target-display" class="text-lg font-bold text-emerald-400">Carregando...</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content (Guessing) -->
+        <main class="flex justify-center">
+            <div class="glass p-8 w-full max-w-xl pointer-events-auto">
+                <div class="space-y-6">
+                    <div class="relative">
+                        <label class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2 block">Qual é o seu palpite?</label>
+                        <div class="relative group">
+                            <input type="text" id="country-search" autocomplete="off" placeholder="Digite o nome de um país..." 
+                                   class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all pointer-events-auto">
+                            
+                            <div id="autocomplete-list" class="absolute bottom-full left-0 right-0 mb-2 max-h-64 overflow-y-auto glass hidden z-50 pointer-events-auto custom-scrollbar">
+                                <!-- Sugestões aparecerão aqui via JS -->
+                            </div>
+                        </div>
+                        <input type="hidden" id="selected-country-id">
+                    </div>
+                    
+                    <button id="btn-guess" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 p-4 rounded-xl font-bold text-lg shadow-xl shadow-blue-900/20 transition-all transform active:scale-95">
+                        Confirmar Palpite
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer / Logs -->
+        <footer class="flex justify-start">
+            <div id="history-container" class="glass p-6 w-96 space-y-4 max-h-64 overflow-y-auto custom-scrollbar">
+                <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Histórico de Tentativas</p>
+                <div id="guess-history" class="space-y-3">
+                    <!-- Palpites aparecerão aqui -->
+                    <p class="text-gray-500 text-sm italic">Nenhum palpite ainda.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-container" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="glass p-8 w-full max-w-md scale-95 transition-transform duration-300 transform" id="modal-content">
+            <div class="text-center space-y-6">
+                <div id="modal-icon" class="w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg">
+                    🎉
+                </div>
+                <div>
+                    <h2 id="modal-title" class="text-2xl font-extrabold glow-text mb-2">Parabéns!</h2>
+                    <p id="modal-message" class="text-gray-300">Você encontrou o país misterioso!</p>
+                </div>
+                <button id="btn-modal-close" class="w-full bg-white/10 hover:bg-white/20 p-4 rounded-xl font-bold transition-all">
+                    Continuar Jogando
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script th:src="@{/js/game.js}"></script>
+</body>
+</html>

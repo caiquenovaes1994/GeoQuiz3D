@@ -13,18 +13,18 @@
 
 ## Etapa 3: Inteligência Geográfica (Java)
 
-- [ ] **Cálculo de Proximidade:** Implementar a Fórmula de Haversine para distância entre centroides.
-- [ ] **Cálculo de Direção:** Lógica de rumo (Bearing) para indicar Norte, Sul, Leste, Oeste.
-- [ ] **API de Palpites:** Endpoint que recebe o ID do país chutado e retorna:
+- [x] **Cálculo de Proximidade:** Implementar a Fórmula de Haversine para distância entre centroides.
+- [x] **Cálculo de Direção:** Lógica de rumo (Bearing) para indicar Norte, Sul, Leste, Oeste.
+- [x] **API de Palpites:** Endpoint que recebe o ID do país chutado e retorna:
   - Distância em KM.
   - Direção cardinal.
   - Cor Hexadecimal (Baseada na tabela de estratégia de cores).
 
 ## Etapa 4: O Globo 3D (Three.js)
 
-- [ ] **Cena Base:** Configurar cena, câmera, luz e controles de órbita (zoom/giro).
-- [ ] **Desenho dos Países:** Usar as coordenadas do seu JSON para criar "Meshes" clicáveis ou destacáveis sobre a esfera.
-- [ ] **Sistema de Feedback Visual:** Ao receber o resultado da API, o país chutado deve ser pintado no globo com a cor retornada (gradiente de Vermelho para Verde).
+- [x] **Cena Base:** Configurar cena, câmera, luz e controles de órbita (zoom/giro).
+- [x] **Desenho dos Países:** Usar as coordenadas do seu JSON para criar "Meshes" clicáveis ou destacáveis sobre a esfera.
+- [x] **Sistema de Feedback Visual:** Ao receber o resultado da API, o país chutado deve ser pintado no globo com a cor retornada (gradiente de Vermelho para Verde).
 
 ## Etapa 5: Módulos de Jogo (Flaggle & Worldle)
 

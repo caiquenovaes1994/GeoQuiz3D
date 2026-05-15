@@ -19,10 +19,10 @@ public class Country {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "iso_alpha_2", length = 2)
+    @Column(name = "iso_alpha_2", length = 10)
     private String isoAlpha2;
 
-    @Column(name = "iso_alpha_3", length = 3)
+    @Column(name = "iso_alpha_3", length = 10)
     private String isoAlpha3;
 
     private Double latitude;
