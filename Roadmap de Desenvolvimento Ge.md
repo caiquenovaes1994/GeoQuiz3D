@@ -8,8 +8,8 @@
 
 ## Etapa 2: Importação e Bandeiras
 
-- [ ] **Parser JSON:** Criar um serviço em Java para ler o `countries.json` e popular o banco de dados.
-- [ ] **Integração Flagpedia:** Criar lógica para montar a URL da bandeira usando o código `ISO3166-1-Alpha-2` do seu JSON.
+- [x] **Parser JSON:** Criar um serviço em Java para ler o `countries.json` e popular o banco de dados.
+- [x] **Integração Flagpedia:** Criar lógica para montar a URL da bandeira usando o código `ISO3166-1-Alpha-2` do seu JSON.
 
 ## Etapa 3: Inteligência Geográfica (Java)
 

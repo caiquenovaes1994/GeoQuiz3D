@@ -25,6 +25,6 @@ public class Country {
     @Column(name = "iso_alpha_3", length = 3)
     private String isoAlpha3;
 
-    // A geometria será processada na Fase 2 para extrair centroides ou limites.
-    // Por enquanto, mantemos os metadados básicos.
+    private Double latitude;
+    private Double longitude;
 }
