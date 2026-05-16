@@ -38,6 +38,9 @@ data/
 .DS_Store
 Thumbs.db
 desktop.ini
+*.zip
+*.jar
+*.war
 
 # Environment
 .env
