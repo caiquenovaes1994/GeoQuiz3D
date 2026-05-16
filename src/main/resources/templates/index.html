@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geo-Quiz 3D | Desafio Global</title>
+    <title>Geo-Quiz 3D | Desafios Geográficos</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
     <style>
         body {
             margin: 0;
@@ -41,6 +43,21 @@
         .glow-text {
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
+        .mode-btn.active, .db-mode-btn.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(59, 130, 246, 0.5);
+            color: #60a5fa;
+        }
+        #worldle-silhouette {
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+            transition: all 0.5s ease;
+        }
+        .flag-blur {
+            transition: filter 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .bearing-arrow {
+            transition: transform 0.5s ease;
+        }
     </style>
 </head>
 <body>
@@ -50,9 +67,25 @@
     <div class="ui-overlay min-h-screen flex flex-col p-8 justify-between">
         <!-- Header -->
         <header class="flex justify-between items-center">
-            <div class="glass p-4 px-8 flex items-center gap-4">
-                <div class="w-10 h-10 bg-gradient-to-tr from-blue-500 to-emerald-400 rounded-xl shadow-lg shadow-blue-500/20"></div>
-                <h1 class="text-2xl font-extrabold tracking-tight glow-text">GEOQUIZ <span class="font-light text-blue-400">3D</span></h1>
+            <div class="flex items-center gap-4">
+                <div class="glass p-4 px-8 flex items-center gap-4">
+                    <div class="w-10 h-10 bg-gradient-to-tr from-blue-500 to-emerald-400 rounded-xl shadow-lg shadow-blue-500/20"></div>
+                    <h1 class="text-2xl font-extrabold tracking-tight glow-text">GEOQUIZ <span class="font-light text-blue-400">3D</span></h1>
+                    <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-bold border border-blue-500/30">v1.0.0</span>
+                </div>
+
+                <!-- Mode Selector -->
+                <div class="glass flex p-1 gap-1 pointer-events-auto">
+                    <button onclick="setMode('classic')" id="mode-classic" class="mode-btn active px-4 py-2 rounded-xl text-sm font-bold transition-all hover:bg-white/5">Globle</button>
+                    <button onclick="setMode('flaggle')" id="mode-flaggle" class="mode-btn px-4 py-2 rounded-xl text-sm font-bold transition-all hover:bg-white/5">Flaggle</button>
+                    <button onclick="setMode('worldle')" id="mode-worldle" class="mode-btn px-4 py-2 rounded-xl text-sm font-bold transition-all hover:bg-white/5">Worldle</button>
+                </div>
+                
+                <!-- Dashboard Toggle -->
+                <button onclick="toggleDashboard()" class="glass p-3 px-6 flex items-center gap-2 hover:bg-white/10 transition-all pointer-events-auto">
+                    <span class="text-blue-400">📊</span>
+                    <span class="text-sm font-bold">Estatísticas</span>
+                </button>
             </div>
             
             <div class="glass p-4 px-6 pointer-events-auto">
@@ -64,6 +97,21 @@
                 </div>
             </div>
         </header>
+
+        <!-- Hint Display (Center) -->
+        <div id="hint-container" class="flex-1 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-500">
+            <!-- Flaggle Container -->
+            <div id="flaggle-box" class="hidden glass p-4 scale-110 shadow-2xl">
+                <img id="flaggle-img" src="" class="w-80 h-48 object-cover rounded-lg flag-blur" style="filter: blur(40px) brightness(0.5);">
+            </div>
+
+            <!-- Worldle Container -->
+            <div id="worldle-box" class="hidden glass p-8 scale-110 shadow-2xl bg-white/5">
+                <svg id="worldle-svg" width="300" height="300" viewBox="0 0 300 300" class="mx-auto">
+                    <path id="worldle-silhouette" d="" fill="white" fill-opacity="0.2" stroke="white" stroke-width="1"></path>
+                </svg>
+            </div>
+        </div>
 
         <!-- Bottom UI (Histórico + Palpite) -->
         <div class="flex items-end justify-between gap-8 pointer-events-none">
@@ -91,9 +139,14 @@
                         <input type="hidden" id="selected-country-id">
                     </div>
                     
-                    <button id="btn-guess" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 p-4 rounded-xl font-bold text-lg shadow-xl shadow-blue-900/20 transition-all transform active:scale-95">
-                        Confirmar Palpite
-                    </button>
+                    <div class="flex gap-4">
+                        <button id="btn-guess" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 p-4 rounded-xl font-bold text-lg shadow-xl shadow-blue-900/20 transition-all transform active:scale-95">
+                            Confirmar Palpite
+                        </button>
+                        <button id="btn-give-up" class="px-6 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/50 rounded-xl font-semibold text-gray-400 hover:text-red-400 transition-all transform active:scale-95">
+                            Desistir
+                        </button>
+                    </div>
                 </div>
             </main>
 
@@ -106,6 +159,66 @@
     <div id="globe-tooltip" class="fixed pointer-events-none z-[150] glass p-2 px-3 flex items-center gap-2 hidden opacity-0 transition-opacity duration-200">
         <img id="tooltip-flag" src="" class="w-6 h-4 object-cover rounded shadow-sm">
         <span id="tooltip-name" class="text-xs font-bold text-white whitespace-nowrap"></span>
+    </div>
+
+    <!-- Modal de Dashboard -->
+    <div id="dashboard-container" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+        <div class="glass p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar scale-95 transition-transform duration-300 transform" id="dashboard-content">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-3xl font-extrabold glow-text">Dashboard do <span class="text-blue-400">Explorador</span></h2>
+                    <p class="text-gray-400">Seu progresso na conquista do mundo</p>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <div class="glass flex p-1 gap-1 pointer-events-auto">
+                        <button onclick="changeDashboardFilter('all')" class="db-mode-btn active px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/5">Todos</button>
+                        <button onclick="changeDashboardFilter('classic')" class="db-mode-btn px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/5">Globle</button>
+                        <button onclick="changeDashboardFilter('flaggle')" class="db-mode-btn px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/5">Flaggle</button>
+                        <button onclick="changeDashboardFilter('worldle')" class="db-mode-btn px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/5">Worldle</button>
+                    </div>
+                    <button onclick="toggleDashboard()" class="w-10 h-10 glass flex items-center justify-center hover:bg-red-500/20 transition-all rounded-full pointer-events-auto">✕</button>
+                </div>
+            </div>
+
+            <!-- Mapa Mundi -->
+            <div class="glass p-6 mb-8">
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full"></span> Países Conquistados no Mapa
+                </h3>
+                <div id="chart-map" class="w-full h-80 bg-white/5 rounded-xl overflow-hidden shadow-inner"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="glass p-6 text-center">
+                    <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Países Encontrados</p>
+                    <p id="stat-count" class="text-4xl font-black text-emerald-400">0</p>
+                </div>
+                <div class="glass p-6 text-center">
+                    <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Cobertura Global</p>
+                    <p id="stat-percent" class="text-4xl font-black text-blue-400">0%</p>
+                </div>
+                <div class="glass p-6 text-center">
+                    <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Média de Tentativas</p>
+                    <p id="stat-avg" class="text-4xl font-black text-indigo-400">--</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass p-6">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span> Distribuição por Continente
+                    </h3>
+                    <div id="chart-continents" class="w-full h-64 bg-white/5 rounded-xl"></div>
+                </div>
+                <div class="glass p-6">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-emerald-400 rounded-full"></span> Top 10 Melhores Scores (Tentativas)
+                    </h3>
+                    <div id="chart-top-countries" class="w-full h-64 bg-white/5 rounded-xl"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal -->
