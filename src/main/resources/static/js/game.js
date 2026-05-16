@@ -435,7 +435,7 @@ function addGuessToHistory(data) {
                     <p class="font-bold text-sm">${guess.countryName}</p>
                     <p class="text-[10px] text-gray-400 uppercase font-semibold flex items-center gap-1">
                         <span class="inline-block bearing-arrow" style="transform: rotate(${guess.bearingDegrees}deg)">↑</span>
-                        ${guess.bearing} • ${guess.distanceKm} KM
+                        ${guess.bearing} • ${guess.distanceKm.toFixed(3)} KM
                     </p>
                 </div>
             </div>
