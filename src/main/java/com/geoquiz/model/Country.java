@@ -27,4 +27,9 @@ public class Country {
 
     private Double latitude;
     private Double longitude;
+    
+    private String continent;
+
+    @Column(name = "geometry_json", columnDefinition = "TEXT")
+    private String geometryJson;
 }

@@ -23,10 +23,23 @@ public class CountryService {
 
     @PostConstruct
     public void init() {
-        // Se tiver poucos países, tenta completar a importação
-        if (countryRepository.count() < 200) {
+        // Se tiver poucos países ou se faltarem geometrias, tenta completar a importação
+        if (countryRepository.count() < 200 || countryRepository.existsByGeometryJsonIsNull()) {
             importCountries();
         }
+        fixTaiwanEntries();
+    }
+
+    private void fixTaiwanEntries() {
+        countryRepository.findAll().stream()
+            .filter(c -> c.getName().toLowerCase().contains("taiwan"))
+            .forEach(c -> {
+                if (c.getIsoAlpha2() == null || !c.getIsoAlpha2().equals("TW")) {
+                    c.setIsoAlpha2("TW");
+                    countryRepository.save(c);
+                    log.info("Corrigido código ISO para Taiwan.");
+                }
+            });
     }
 
     public void importCountries() {
@@ -48,6 +61,13 @@ public class CountryService {
                         String name = props.has("name") ? props.get("name").asText() : "Desconhecido";
                         String iso2 = props.has("ISO3166-1-Alpha-2") ? props.get("ISO3166-1-Alpha-2").asText() : null;
                         String iso3 = props.has("ISO3166-1-Alpha-3") ? props.get("ISO3166-1-Alpha-3").asText() : null;
+                        String continent = props.has("CONTINENT") ? props.get("CONTINENT").asText() : "Desconhecido";
+
+                        // Normalização para Taiwan
+                        if (name.toLowerCase().contains("taiwan") && (iso2 == null || iso2.isEmpty())) {
+                            iso2 = "TW";
+                            continent = "Asia";
+                        }
 
                         // Buscar se já existe
                         Optional<Country> existing = countryRepository.findByIsoAlpha2(iso2);
@@ -61,18 +81,26 @@ public class CountryService {
                         } else {
                             country = existing.get();
                         }
+                        
+                        country.setContinent(continent);
 
-                        // Se o país for novo ou estiver sem coordenadas, tenta calcular
-                        if (country.getLatitude() == null || country.getLongitude() == null) {
+                        // Se o país for novo ou estiver sem coordenadas/geometria, tenta calcular e salvar
+                        if (country.getLatitude() == null || country.getLongitude() == null || country.getGeometryJson() == null) {
                             JsonNode geometry = feature.get("geometry");
+                            
+                            // Salva a geometria como string para o Worldle
+                            if (geometry != null) {
+                                country.setGeometryJson(geometry.toString());
+                            }
+
                             double[] centroid = calculateCentroid(geometry);
                             if (centroid != null) {
                                 country.setLongitude(centroid[0]);
                                 country.setLatitude(centroid[1]);
-                                countryRepository.save(country);
-                                log.debug("Coordenadas atualizadas para: {}", name);
+                                log.debug("Coordenadas e Geometria atualizadas para: {}", name);
                             }
                         }
+                        countryRepository.save(country);
                     } catch (Exception e) {
                         log.warn("Erro ao importar um país específico, pulando... Erro: {}", e.getMessage());
                     }
@@ -132,7 +160,14 @@ public class CountryService {
      */
     public String getFlagUrl(String isoAlpha2) {
         if (isoAlpha2 == null || isoAlpha2.isEmpty()) return null;
-        // Flagpedia costuma usar códigos em minúsculo
-        return "https://flagcdn.com/w640/" + isoAlpha2.toLowerCase() + ".png";
+        
+        String code = isoAlpha2.toLowerCase();
+        
+        // Correção para Taiwan (comumente vindo como TW ou códigos alternativos em alguns datasets)
+        if (code.equals("tw") || code.contains("taiwan")) {
+            return "https://flagcdn.com/w640/tw.png";
+        }
+        
+        return "https://flagcdn.com/w640/" + code + ".png";
     }
 }

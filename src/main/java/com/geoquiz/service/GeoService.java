@@ -19,12 +19,16 @@ public class GeoService {
         return EARTH_RADIUS * c;
     }
 
-    public String calculateBearing(double lat1, double lon1, double lat2, double lon2) {
+    public double calculateBearingDegrees(double lat1, double lon1, double lat2, double lon2) {
         double y = Math.sin(Math.toRadians(lon2 - lon1)) * Math.cos(Math.toRadians(lat2));
         double x = Math.cos(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) -
                    Math.sin(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(Math.toRadians(lon2 - lon1));
         
-        double bearing = (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
+        return (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
+    }
+
+    public String calculateBearing(double lat1, double lon1, double lat2, double lon2) {
+        double bearing = calculateBearingDegrees(lat1, lon1, lat2, lon2);
         
         String[] directions = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
         return directions[(int) Math.round(bearing / 45) % 8];

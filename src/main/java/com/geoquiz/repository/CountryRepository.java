@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface CountryRepository extends JpaRepository<Country, Long> {
     Optional<Country> findByIsoAlpha2(String isoAlpha2);
+    boolean existsByGeometryJsonIsNull();
 }
