@@ -21,4 +21,10 @@ public interface ConqueredCountryRepository extends JpaRepository<ConqueredCount
 
     @Query("SELECT c.country.isoAlpha2 FROM ConqueredCountry c WHERE c.user = :user AND (:gameMode IS NULL OR c.gameMode = :gameMode)")
     List<String> findConqueredIsoCodesByUserAndGameMode(User user, String gameMode);
+
+    @Query("SELECT c.country.name, COUNT(c) FROM ConqueredCountry c " +
+           "WHERE c.user = :user AND (:gameMode IS NULL OR c.gameMode = :gameMode) " +
+           "GROUP BY c.country.name " +
+           "ORDER BY COUNT(c) DESC, c.country.name ASC")
+    List<Object[]> findTopCountriesByAcertos(User user, String gameMode);
 }
