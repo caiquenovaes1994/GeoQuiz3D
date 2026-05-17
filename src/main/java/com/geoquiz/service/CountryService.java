@@ -2,7 +2,9 @@ package com.geoquiz.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.geoquiz.model.ConqueredCountry;
 import com.geoquiz.model.Country;
+import com.geoquiz.repository.ConqueredCountryRepository;
 import com.geoquiz.repository.CountryRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class CountryService {
 
     private final CountryRepository countryRepository;
+    private final ConqueredCountryRepository conqueredCountryRepository;
     private final ObjectMapper objectMapper;
 
     @PostConstruct
@@ -30,6 +33,7 @@ public class CountryService {
         }
         fixTaiwanEntries();
         fixUnknownContinents();
+        healSpecificCountries();
     }
 
     private void fixTaiwanEntries() {
@@ -231,5 +235,139 @@ public class CountryService {
         }
         
         return "https://flagcdn.com/w640/" + code + ".png";
+    }
+
+    private void healSpecificCountries() {
+        log.info("Iniciando rotina de cura e calibragem de países específicos...");
+
+        // 1. Remover países indesejados (e suas respectivas conquistas)
+        removeCountryAndConquests("Dhekelia Sovereign Base Area");
+        removeCountryAndConquests("United States Minor Outlying Islands");
+        removeCountryAndConquestsByIso2("UM");
+
+        // 2. Atualizar coordenadas errôneas para posições geográficas reais
+        updateCountryCoordinates("EC", -1.8312, -78.1834);   // Ecuador
+        updateCountryCoordinates("FJ", -17.7134, 178.0650);  // Fiji
+        updateCountryCoordinates("KI", 1.8369, -157.3768);   // Kiribati
+        updateCountryCoordinates("NZ", -40.9006, 174.8860);  // New Zealand
+        updateCountryCoordinates("PT", 39.3999, -8.2245);    // Portugal
+        updateCountryCoordinates("US", 37.0902, -95.7129);   // United States
+
+        // 3. Garantir a existência e geometrias de France, Norway e French Guyana
+        ensureCountryExists("France", "FR", "FRA", "Europe", 46.2276, 2.2137);
+        ensureCountryExists("Norway", "NO", "NOR", "Europe", 60.4720, 8.4689);
+        ensureCountryExists("French Guyana", "GF", "GUF", "South America", 4.0, -53.0);
+        
+        log.info("Rotina de cura e calibragem concluída com sucesso!");
+    }
+
+    private void removeCountryAndConquests(String name) {
+        countryRepository.findAll().stream()
+            .filter(c -> c.getName().equalsIgnoreCase(name))
+            .findFirst()
+            .ifPresent(this::deleteCountryAndConquestsHelper);
+    }
+
+    private void removeCountryAndConquestsByIso2(String iso2) {
+        countryRepository.findByIsoAlpha2(iso2)
+            .ifPresent(this::deleteCountryAndConquestsHelper);
+    }
+
+    private void deleteCountryAndConquestsHelper(Country country) {
+        try {
+            List<ConqueredCountry> conquered = conqueredCountryRepository.findAll().stream()
+                .filter(cc -> cc.getCountry().getId().equals(country.getId()))
+                .toList();
+            if (!conquered.isEmpty()) {
+                conqueredCountryRepository.deleteAll(conquered);
+                log.info("Removidas {} conquistas históricas do país '{}' no auto-healing.", conquered.size(), country.getName());
+            }
+            countryRepository.delete(country);
+            log.info("País removido com sucesso no auto-healing: '{}'", country.getName());
+        } catch (Exception e) {
+            log.error("Erro ao remover país '" + country.getName() + "' no auto-healing", e);
+        }
+    }
+
+    private void updateCountryCoordinates(String iso2, double lat, double lon) {
+        countryRepository.findByIsoAlpha2(iso2).ifPresent(c -> {
+            c.setLatitude(lat);
+            c.setLongitude(lon);
+            countryRepository.save(c);
+            log.info("Calibrado: {}: Lat={}, Lon={}", c.getName(), lat, lon);
+        });
+    }
+
+    private void ensureCountryExists(String name, String iso2, String iso3, String continent, double lat, double lon) {
+        Optional<Country> existing = countryRepository.findByIsoAlpha2(iso2);
+        if (existing.isPresent()) {
+            Country c = existing.get();
+            c.setLatitude(lat);
+            c.setLongitude(lon);
+            c.setContinent(continent);
+            countryRepository.save(c);
+            log.info("País '{}' recalibrado com sucesso.", name);
+            return;
+        }
+
+        log.info("País '{}' ausente. Criando e tentando extrair geometria de countries.json...", name);
+        Country newCountry = new Country();
+        newCountry.setName(name);
+        newCountry.setIsoAlpha2(iso2);
+        newCountry.setIsoAlpha3(iso3);
+        newCountry.setContinent(continent);
+        newCountry.setLatitude(lat);
+        newCountry.setLongitude(lon);
+
+        boolean foundInJson = false;
+        try {
+            File file = new File("countries.json");
+            if (file.exists()) {
+                JsonNode root = objectMapper.readTree(file);
+                JsonNode features = root.get("features");
+                if (features != null && features.isArray()) {
+                    for (JsonNode feature : features) {
+                        JsonNode props = feature.get("properties");
+                        String pName = props.has("name") ? props.get("name").asText() : "";
+                        String pIso2 = props.has("ISO3166-1-Alpha-2") ? props.get("ISO3166-1-Alpha-2").asText() : "";
+                        String pIso3 = props.has("ISO3166-1-Alpha-3") ? props.get("ISO3166-1-Alpha-3").asText() : "";
+
+                        if (pIso2.equalsIgnoreCase(iso2) || pIso3.equalsIgnoreCase(iso3) || 
+                            pName.equalsIgnoreCase(name) || pName.toLowerCase().contains(name.toLowerCase())) {
+                            
+                            JsonNode geometry = feature.get("geometry");
+                            if (geometry != null) {
+                                newCountry.setGeometryJson(geometry.toString());
+                                if (!pName.isEmpty()) {
+                                    newCountry.setName(pName);
+                                }
+                                foundInJson = true;
+                                log.info("Geometria extraída do JSON com sucesso para '{}'", newCountry.getName());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Erro ao ler geometria de '{}' do countries.json: {}", name, e.getMessage());
+        }
+
+        if (!foundInJson) {
+            double offset = 0.5;
+            String fallbackGeometry = String.format(
+                "{\"type\":\"Polygon\",\"coordinates\":[[[%f,%f],[%f,%f],[%f,%f],[%f,%f],[%f,%f]]]}",
+                lon - offset, lat - offset,
+                lon + offset, lat - offset,
+                lon + offset, lat + offset,
+                lon - offset, lat + offset,
+                lon - offset, lat - offset
+            );
+            newCountry.setGeometryJson(fallbackGeometry);
+            log.info("Geometria não encontrada no GeoJSON para '{}'. Fallback simplificado gerado.", name);
+        }
+
+        countryRepository.save(newCountry);
+        log.info("País '{}' inserido e curado com sucesso!", newCountry.getName());
     }
 }
