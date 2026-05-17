@@ -46,14 +46,21 @@ public class DashboardController {
             ));
         }
 
-        // Top 10 Países (por menos tentativas)
+        // Média real de todas as tentativas
+        List<com.geoquiz.model.ConqueredCountry> allConquests = conqueredCountryRepository.findByUserAndGameMode(user, filterMode);
+        double avgAttempts = allConquests.stream()
+            .mapToInt(com.geoquiz.model.ConqueredCountry::getAttempts)
+            .average()
+            .orElse(0.0);
+
+        // Top 10 Países (por mais acertos)
         List<Map<String, Object>> topCountries = new ArrayList<>();
-        conqueredCountryRepository.findByUserAndGameMode(user, filterMode).stream()
-            .sorted((a, b) -> Integer.compare(a.getAttempts(), b.getAttempts()))
+        List<Object[]> topCountriesRaw = conqueredCountryRepository.findTopCountriesByAcertos(user, filterMode);
+        topCountriesRaw.stream()
             .limit(10)
-            .forEach(c -> topCountries.add(Map.of(
-                "name", c.getCountry().getName(),
-                "attempts", c.getAttempts()
+            .forEach(row -> topCountries.add(Map.of(
+                "name", row[0] != null ? row[0] : "Desconhecido",
+                "acertos", row[1]
             )));
 
         // Códigos ISO para o mapa
@@ -63,6 +70,7 @@ public class DashboardController {
         stats.put("totalWorldCountries", totalCountries);
         stats.put("conqueredUnique", conqueredUnique);
         stats.put("conqueredPercentage", totalCountries > 0 ? (double) conqueredUnique / totalCountries * 100 : 0);
+        stats.put("averageAttempts", avgAttempts);
         stats.put("continentStats", continentStats);
         stats.put("topCountries", topCountries);
         stats.put("conqueredIsoCodes", conqueredIsoCodes);

@@ -1,5 +1,6 @@
 # 🌍 Geo-Quiz 3D
 
+[![Version](https://img.shields.io/badge/version-v1.1.0-blue?style=flat)](./src/main/resources/templates/index.html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat)](https://opensource.org/licenses/MIT)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.6-6DB33F?style=flat&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![Three.js](https://img.shields.io/badge/Three.js-r128-000000?style=flat&logo=three.js&logoColor=white)](https://threejs.org/)

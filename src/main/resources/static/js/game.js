@@ -630,8 +630,8 @@ async function updateDashboardStats() {
         document.getElementById("stat-count").innerText = stats.conqueredUnique;
         document.getElementById("stat-percent").innerText = stats.conqueredPercentage.toFixed(1) + "%";
         
-        const avgAttempts = stats.topCountries.length > 0 
-            ? (stats.topCountries.reduce((acc, curr) => acc + curr.attempts, 0) / stats.topCountries.length).toFixed(1)
+        const avgAttempts = stats.averageAttempts !== undefined && stats.averageAttempts > 0
+            ? stats.averageAttempts.toFixed(1)
             : "--";
         document.getElementById("stat-avg").innerText = avgAttempts;
 
@@ -678,12 +678,14 @@ function drawCharts(stats) {
         pieSliceBorderStyle: { color: "transparent" }
     });
 
-    // 3. Gráfico de Top 10
-    const topData = [["País", "Tentativas", { role: "style" }]];
+    // 3. Gráfico de Top 10 (Países Mais Acertados)
+    const topData = [["País", "Acertos", { role: "style" }, { role: "annotation" }]];
     if (stats.topCountries && stats.topCountries.length > 0) {
-        stats.topCountries.forEach(s => topData.push([s.name, s.attempts, "color: #34d399; opacity: 0.8"]));
+        stats.topCountries.forEach(s => {
+            topData.push([s.name, s.acertos, "color: #34d399; opacity: 0.8", String(s.acertos)]);
+        });
     } else {
-        topData.push(["Nenhum", 0, "color: #374151"]);
+        topData.push(["Nenhum", 0, "color: #374151", ""]);
     }
     
     const topChart = new google.visualization.ColumnChart(document.getElementById("chart-top-countries"));

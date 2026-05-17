@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,6 +29,7 @@ public class CountryService {
             importCountries();
         }
         fixTaiwanEntries();
+        fixUnknownContinents();
     }
 
     private void fixTaiwanEntries() {
@@ -40,6 +42,62 @@ public class CountryService {
                     log.info("Corrigido código ISO para Taiwan.");
                 }
             });
+    }
+
+    private void fixUnknownContinents() {
+        long count = countryRepository.findAll().stream()
+            .filter(c -> c.getContinent() == null || c.getContinent().equals("Desconhecido"))
+            .peek(c -> {
+                String newContinent = getContinentByIso(c.getIsoAlpha2());
+                c.setContinent(newContinent);
+                countryRepository.save(c);
+            })
+            .count();
+        if (count > 0) {
+            log.info("Corrigidos {} continentes que estavam como Desconhecido no banco.", count);
+        }
+    }
+
+    private String getContinentByIso(String iso2) {
+        if (iso2 == null) return "Desconhecido";
+        iso2 = iso2.toUpperCase();
+        
+        // Europa (Europe)
+        if (List.of("AD", "AL", "AM", "AT", "AZ", "BA", "BE", "BG", "BY", "CH", "CY", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GE", "GR", "HR", "HU", "IE", "IS", "IT", "LI", "LT", "LU", "LV", "MC", "MD", "ME", "MK", "MT", "NL", "NO", "PL", "PT", "RO", "RS", "RU", "SE", "SI", "SK", "SM", "UA", "GB", "VA", "XK", "UK", "GB-ENG", "GB-WLS", "GB-SCT", "GB-NIR").contains(iso2)) {
+            return "Europe";
+        }
+        
+        // América do Sul (South America)
+        if (List.of("AR", "BO", "BR", "CL", "CO", "EC", "FK", "GF", "GY", "PE", "PY", "SR", "UY", "VE").contains(iso2)) {
+            return "South America";
+        }
+        
+        // América do Norte / Central (North America)
+        if (List.of("AG", "BS", "BB", "BZ", "CA", "CR", "CU", "DM", "DO", "SV", "GD", "GT", "HT", "HN", "JM", "MX", "NI", "PA", "KN", "LC", "VC", "TT", "US", "PR", "GL", "GP", "MQ", "MS", "TC", "VI", "VG", "KY", "BM", "PM", "SX", "MF", "BL", "AW", "CW", "BQ").contains(iso2)) {
+            return "North America";
+        }
+        
+        // Ásia (Asia)
+        if (List.of("AF", "BH", "BD", "BT", "BN", "KH", "CN", "IN", "ID", "IR", "IQ", "IL", "JP", "JO", "KZ", "KP", "KR", "KW", "KG", "LA", "LB", "MY", "MV", "MN", "MM", "NP", "OM", "PK", "PS", "PH", "QA", "SA", "SG", "LK", "SY", "TW", "TJ", "TH", "TL", "TR", "TM", "AE", "UZ", "VN", "YE").contains(iso2)) {
+            return "Asia";
+        }
+        
+        // Oceania
+        if (List.of("AU", "FJ", "KI", "MH", "FM", "NR", "NZ", "PW", "PG", "WS", "SB", "TO", "TV", "VU", "NC", "PF", "AS", "GU", "MP", "CK", "NU", "WF", "TK").contains(iso2)) {
+            return "Oceania";
+        }
+        
+        // África (Africa)
+        if (List.of("AO", "BJ", "BW", "BF", "BI", "CV", "CM", "CF", "TD", "KM", "CD", "CG", "CI", "DJ", "EG", "GQ", "ER", "SZ", "ET", "GA", "GM", "GH", "GN", "GW", "KE", "LS", "LR", "LY", "MG", "MW", "ML", "MR", "MU", "MA", "MZ", "NA", "NE", "NG", "RW", "ST", "SN", "SC", "SL", "SO", "ZA", "SS", "SD", "TZ", "TG", "TN", "UG", "ZM", "ZW", "YT", "RE", "SH", "EH").contains(iso2)) {
+            return "Africa";
+        }
+        
+        // Antártida (Antarctica)
+        if (List.of("AQ", "TF", "BV", "HM", "GS").contains(iso2)) {
+            return "Antarctica";
+        }
+        
+        return "Desconhecido";
     }
 
     public void importCountries() {
@@ -67,6 +125,10 @@ public class CountryService {
                         if (name.toLowerCase().contains("taiwan") && (iso2 == null || iso2.isEmpty())) {
                             iso2 = "TW";
                             continent = "Asia";
+                        }
+
+                        if ("Desconhecido".equals(continent) && iso2 != null) {
+                            continent = getContinentByIso(iso2);
                         }
 
                         // Buscar se já existe

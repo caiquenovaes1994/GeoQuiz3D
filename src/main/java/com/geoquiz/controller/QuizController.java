@@ -56,14 +56,11 @@ public class QuizController {
 
         boolean correct = guessedId.equals(targetId);
         
-        // Salvar conquista se estiver correto
+        // Salvar conquista se estiver correto (cria uma nova linha para registrar cada acerto histórico)
         if (correct) {
             User user = userRepository.findById(1L).orElse(null);
             if (user != null) {
-                ConqueredCountry conquest = conqueredCountryRepository
-                    .findByUserAndCountry(user, target)
-                    .orElse(new ConqueredCountry());
-                
+                ConqueredCountry conquest = new ConqueredCountry();
                 conquest.setUser(user);
                 conquest.setCountry(target);
                 conquest.setConqueredAt(LocalDateTime.now());
