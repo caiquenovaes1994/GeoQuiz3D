@@ -1,3 +1,6 @@
+<!-- markdownlint-disable MD033 MD041 -->
+<div align="center">
+
 # 🌍 Geo-Quiz 3D
 
 [![Version](https://img.shields.io/badge/version-v1.3.0-blue?style=flat)](https://github.com/caiquenovaes1994/GeoQuiz3D/releases/tag/v1.3.0)
@@ -18,6 +21,8 @@
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-005F0F?style=flat&logo=thymeleaf&logoColor=white)](https://www.thymeleaf.org/)
 
 O **Geo-Quiz 3D** é uma plataforma imersiva de desafios geográficos que combina a precisão de um backend em Java com a interatividade de um globo 3D renderizado em tempo real. Os jogadores podem testar seus conhecimentos em três módulos distintos, acompanhando seu progresso através de um dashboard detalhado.
+
+</div>
 
 ---
 
