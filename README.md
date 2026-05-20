@@ -5,7 +5,6 @@
 
 [![Version](https://img.shields.io/badge/version-v1.3.0-blue?style=flat)](https://github.com/caiquenovaes1994/GeoQuiz3D/releases/tag/v1.3.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat)](https://opensource.org/licenses/MIT)
-
 [![Java](https://img.shields.io/badge/Java-17-ED8B00?style=flat&logo=java&logoColor=white)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.6-6DB33F?style=flat&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![Spring Security](https://img.shields.io/badge/Spring_Security-4.0.6-6DB33F?style=flat&logo=spring-security&logoColor=white)](https://spring.io/projects/spring-security)
@@ -13,7 +12,6 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-42.7.10-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Lombok](https://img.shields.io/badge/Lombok-v1.18-BC2A2A?style=flat)](https://projectlombok.org/)
 [![Google OAuth2](https://img.shields.io/badge/Google%20OAuth2-v2.0-4285F4?style=flat&logo=google&logoColor=white)](https://developers.google.com/identity)
-
 [![Three.js](https://img.shields.io/badge/Three.js-r128-000000?style=flat&logo=three.js&logoColor=white)](https://threejs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v3-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Tween.js](https://img.shields.io/badge/Tween.js-18.6.4-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://github.com/tweenjs/tween.js/)
