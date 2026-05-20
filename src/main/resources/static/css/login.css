@@ -1,0 +1,122 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: url('../img/login_bg.png') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    width: 360px;
+    height: 480px;
+    background-color: rgba(30, 39, 46, 0.85); /* #1e272e with opacity */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.1); /* Glass effect */
+    overflow: hidden;
+    box-shadow: 0 15px 25px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    padding: 40px 30px;
+    box-sizing: border-box;
+}
+
+.container h2 {
+    color: #fff;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 16px;
+    color: #fff;
+    border: none;
+    border-bottom: 1px solid #fff;
+    outline: none;
+    background: transparent;
+}
+
+.input-group label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 10px 0;
+    font-size: 16px;
+    color: #fff;
+    pointer-events: none;
+    transition: .5s;
+}
+
+.input-group input:focus ~ label,
+.input-group input:valid ~ label {
+    top: -20px;
+    left: 0;
+    color: #03e9f4;
+    font-size: 12px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 16px;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: .5s;
+    margin-top: 10px;
+    letter-spacing: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 5px rgba(255,255,255,0.2);
+}
+
+.google-btn {
+    background: #db4437;
+    margin-top: 15px;
+    border: none;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.google-btn:hover {
+    background: #c53929;
+}
+
+.links {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.links a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.links a:hover {
+    color: #fff;
+}

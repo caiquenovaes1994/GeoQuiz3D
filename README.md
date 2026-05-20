@@ -1,10 +1,11 @@
 # 🌍 Geo-Quiz 3D
 
-[![Version](https://img.shields.io/badge/version-v1.2.0-blue?style=flat)](https://github.com/caiquenovaes1994/GeoQuiz3D/releases/tag/v1.2.0)
+[![Version](https://img.shields.io/badge/version-v1.3.0-blue?style=flat)](https://github.com/caiquenovaes1994/GeoQuiz3D/releases/tag/v1.3.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat)](https://opensource.org/licenses/MIT)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.6-6DB33F?style=flat&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![Three.js](https://img.shields.io/badge/Three.js-r128-000000?style=flat&logo=three.js&logoColor=white)](https://threejs.org/)
 [![Java](https://img.shields.io/badge/Java-17-ED8B00?style=flat&logo=java&logoColor=white)](https://www.oracle.com/java/)
+[![Google OAuth2](https://img.shields.io/badge/Google%20OAuth2-4285F4?style=flat&logo=google&logoColor=white)](https://developers.google.com/identity)
 
 O **Geo-Quiz 3D** é uma plataforma imersiva de desafios geográficos que combina a precisão de um backend em Java com a interatividade de um globo 3D renderizado em tempo real. Os jogadores podem testar seus conhecimentos em três módulos distintos, acompanhando seu progresso através de um dashboard detalhado.
 
@@ -32,7 +33,8 @@ Identifique o país apenas pela sua silhueta geográfica. Renderizado via SVG di
 * **Dashboard do Explorador**: Visualize suas estatísticas globais, conquistas por continente e mapa múndi de países descobertos.
 * **Inteligência Geográfica**: Motor de cálculo baseado nas fórmulas de Haversine e Bearing para precisão milimétrica.
 * **Design Futurista**: Interface baseada em *Glassmorphism* com tema Neon/Dark, totalmente responsiva para dispositivos móveis.
-* **Persistência de Sessão**: Reinicie jogos instantaneamente e mantenha seu progresso sem recarregar a página.
+* **Segurança e Autenticação**: Sistema de login robusto utilizando Spring Security com suporte a Login Social via Google (OAuth2).
+* **Persistência de Sessão**: Reinicie jogos instantaneamente e mantenha seu progresso e conta salvos de forma segura.
 
 ---
 
@@ -41,6 +43,7 @@ Identifique o país apenas pela sua silhueta geográfica. Renderizado via SVG di
 ### Backend
 
 * **Java 17 / Spring Boot 4**: Núcleo da aplicação e APIs REST.
+* **Spring Security & OAuth2**: Proteção de rotas, controle de acesso e autenticação via Google.
 * **Spring Data JPA / PostgreSQL**: Persistência de países, usuários e conquistas.
 * **Lombok**: Otimização de boilerplate code.
 

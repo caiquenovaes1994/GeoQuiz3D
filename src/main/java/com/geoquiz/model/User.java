@@ -21,8 +21,15 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = true)
     private String password;
+
+    private String provider; // e.g., LOCAL, GOOGLE
+
+    private String providerId;
 
     private boolean enabled = true;
 

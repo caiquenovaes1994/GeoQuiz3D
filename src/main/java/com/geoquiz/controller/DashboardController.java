@@ -3,12 +3,13 @@ package com.geoquiz.controller;
 import com.geoquiz.model.User;
 import com.geoquiz.repository.ConqueredCountryRepository;
 import com.geoquiz.repository.CountryRepository;
-import com.geoquiz.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,16 +23,16 @@ public class DashboardController {
 
     private final ConqueredCountryRepository conqueredCountryRepository;
     private final CountryRepository countryRepository;
-    private final UserRepository userRepository;
 
     @GetMapping("/stats")
-    public ResponseEntity<Map<String, Object>> getStats(@org.springframework.web.bind.annotation.RequestParam(required = false) String gameMode) {
+    public ResponseEntity<Map<String, Object>> getStats(
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String gameMode,
+            @AuthenticationPrincipal com.geoquiz.security.CustomUserDetails userDetails) {
         // Tratar "all" como null para o filtro do repositório
         String filterMode = (gameMode == null || gameMode.equalsIgnoreCase("all")) ? null : gameMode;
 
-        // Por enquanto usamos o primeiro usuário (player)
-        User user = userRepository.findById(1L).orElse(null);
-        if (user == null) return ResponseEntity.notFound().build();
+        if (userDetails == null || userDetails.getUser() == null) return ResponseEntity.notFound().build();
+        User user = userDetails.getUser();
 
         long totalCountries = countryRepository.count();
         long conqueredUnique = conqueredCountryRepository.countUniqueCountriesByUserAndGameMode(user, filterMode);

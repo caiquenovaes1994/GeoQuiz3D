@@ -20,6 +20,7 @@ public class UserService {
         if (userRepository.count() == 0) {
             User user = new User();
             user.setUsername("player");
+            user.setEmail("player@geoquiz.local");
             user.setPassword(passwordEncoder.encode("p@ssword"));
             user.setRoles(Set.of("ROLE_USER"));
             userRepository.save(user);
