@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+    <script th:src="@{/js/tween.umd.js}"></script>
     <style>
         body {
             margin: 0;
@@ -80,7 +80,7 @@
                         <span class="text-2xl animate-spin-slow select-none">🌍</span>
                     </div>
                     <h1 class="text-2xl font-extrabold tracking-tight glow-text">GEOQUIZ <span class="font-light text-blue-400">3D</span></h1>
-                    <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-bold border border-blue-500/30">v1.2.0</span>
+                    <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-bold border border-blue-500/30">v1.3.0</span>
                 </div>
 
                 <!-- Mode Selector -->
@@ -95,6 +95,12 @@
                     <span class="text-blue-400">📊</span>
                     <span class="text-sm font-bold">Estatísticas</span>
                 </button>
+
+                <!-- User Info & Logout -->
+                <div class="glass p-3 px-4 flex items-center gap-3 pointer-events-auto" th:if="${#authorization.expression('isAuthenticated()')}">
+                    <span class="text-sm font-bold text-emerald-400" th:text="${#authentication.principal.user.username}">User</span>
+                    <a th:href="@{/logout}" class="text-xs bg-red-500/20 text-red-400 px-3 py-1 border border-red-500/30 rounded-lg font-bold hover:bg-red-500/40 transition-all">Sair</a>
+                </div>
             </div>
             
             <div class="glass p-4 px-6 pointer-events-auto">

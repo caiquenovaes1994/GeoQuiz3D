@@ -8,23 +8,38 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import com.geoquiz.security.CustomOAuth2UserService;
+import com.geoquiz.security.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService, CustomUserDetailsService customUserDetailsService) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
+                .requestMatchers("/css/**", "/js/**", "/img/**", "/login", "/register", "/oauth2/**", "/login/oauth2/code/**").permitAll()
+                .anyRequest().authenticated()
             )
             .formLogin((form) -> form
                 .loginPage("/login")
+                .defaultSuccessUrl("/", true)
                 .permitAll()
             )
-            .logout((logout) -> logout.permitAll());
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService)
+                )
+                .defaultSuccessUrl("/", true)
+            )
+            .logout((logout) -> logout
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
+            )
+            .userDetailsService(customUserDetailsService);
 
         return http.build();
     }

@@ -3,14 +3,15 @@ package com.geoquiz.controller;
 import com.geoquiz.dto.GuessResponse;
 import com.geoquiz.model.ConqueredCountry;
 import com.geoquiz.model.Country;
-import com.geoquiz.model.User;
+
 import com.geoquiz.repository.ConqueredCountryRepository;
 import com.geoquiz.repository.CountryRepository;
-import com.geoquiz.repository.UserRepository;
+
 import com.geoquiz.service.CountryService;
 import com.geoquiz.service.GeoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -25,14 +26,15 @@ public class QuizController {
     private final CountryService countryService;
     private final GeoService geoService;
     private final ConqueredCountryRepository conqueredCountryRepository;
-    private final UserRepository userRepository;
+
 
     @GetMapping("/guess")
     public ResponseEntity<GuessResponse> handleGuess(
             @RequestParam Long guessedId,
             @RequestParam Long targetId,
             @RequestParam(required = false, defaultValue = "Globle") String gameMode,
-            @RequestParam(required = false, defaultValue = "1") int attempts) {
+            @RequestParam(required = false, defaultValue = "1") int attempts,
+            @AuthenticationPrincipal com.geoquiz.security.CustomUserDetails userDetails) {
         
         Country guessed = countryRepository.findById(guessedId)
                 .orElseThrow(() -> new RuntimeException("País palpite não encontrado"));
@@ -58,10 +60,9 @@ public class QuizController {
         
         // Salvar conquista se estiver correto (cria uma nova linha para registrar cada acerto histórico)
         if (correct) {
-            User user = userRepository.findById(1L).orElse(null);
-            if (user != null) {
+            if (userDetails != null && userDetails.getUser() != null) {
                 ConqueredCountry conquest = new ConqueredCountry();
-                conquest.setUser(user);
+                conquest.setUser(userDetails.getUser());
                 conquest.setCountry(target);
                 conquest.setConqueredAt(LocalDateTime.now());
                 conquest.setAttempts(attempts);
