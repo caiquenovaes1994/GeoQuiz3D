@@ -9,7 +9,7 @@
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.6-6DB33F?style=flat&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![Spring Security](https://img.shields.io/badge/Spring_Security-4.0.6-6DB33F?style=flat&logo=spring-security&logoColor=white)](https://spring.io/projects/spring-security)
 [![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-4.0.6-6DB33F?style=flat&logo=spring&logoColor=white)](https://spring.io/projects/spring-data-jpa)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-42.7.10-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=flat&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
 [![Lombok](https://img.shields.io/badge/Lombok-v1.18-BC2A2A?style=flat)](https://projectlombok.org/)
 [![Three.js](https://img.shields.io/badge/Three.js-r128-000000?style=flat&logo=three.js&logoColor=white)](https://threejs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v3-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
@@ -57,7 +57,7 @@ Identifique o país apenas pela sua silhueta geográfica. Renderizado via SVG di
 
 * **Java 17 / Spring Boot 4**: Núcleo da aplicação e APIs REST.
 * **Spring Security & OAuth2**: Proteção de rotas, controle de acesso e autenticação via Google.
-* **Spring Data JPA / PostgreSQL**: Persistência de países, usuários e conquistas.
+* **Spring Data JPA / SQLite**: Persistência de países, usuários e conquistas.
 * **Lombok**: Otimização de boilerplate code.
 
 ### Frontend
