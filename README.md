@@ -3,7 +3,7 @@
 
 # 🌍 Geo-Quiz 3D
 
-[![Version](https://img.shields.io/badge/version-v1.3.0-blue?style=flat)](https://github.com/caiquenovaes1994/GeoQuiz3D/releases/tag/v1.3.0)
+[![Version](https://img.shields.io/badge/version-v1.4.0-blue?style=flat)](https://github.com/caiquenovaes1994/GeoQuiz3D/releases/tag/v1.4.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-17-ED8B00?style=flat&logo=java&logoColor=white)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.6-6DB33F?style=flat&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
