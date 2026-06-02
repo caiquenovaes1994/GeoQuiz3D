@@ -57,12 +57,21 @@ public class DashboardController {
         // Top 10 Países (por mais acertos)
         List<Map<String, Object>> topCountries = new ArrayList<>();
         List<Object[]> topCountriesRaw = conqueredCountryRepository.findTopCountriesByAcertos(user, filterMode);
+        java.util.Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale();
         topCountriesRaw.stream()
             .limit(10)
-            .forEach(row -> topCountries.add(Map.of(
-                "name", row[0] != null ? row[0] : "Desconhecido",
-                "acertos", row[1]
-            )));
+            .forEach(row -> {
+                String iso2 = (String) row[0];
+                String defaultName = (String) row[1];
+                String localizedName = defaultName;
+                if (iso2 != null && !iso2.isEmpty()) {
+                    localizedName = new java.util.Locale("", iso2).getDisplayCountry(locale);
+                }
+                topCountries.add(Map.of(
+                    "name", localizedName != null ? localizedName : "Desconhecido",
+                    "acertos", row[2]
+                ));
+            });
 
         // Códigos ISO para o mapa
         List<String> conqueredIsoCodes = conqueredCountryRepository.findConqueredIsoCodesByUserAndGameMode(user, filterMode);

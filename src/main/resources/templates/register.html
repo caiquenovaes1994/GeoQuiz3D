@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - Geo-Quiz 3D</title>
+    <title th:text="#{register.title}">Cadastro - Geo-Quiz 3D</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/login.css}">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Roboto:wght@500&display=swap" rel="stylesheet">
@@ -103,7 +103,7 @@
             <h1 class="header-title glow-text">GEOQUIZ <span>3D</span></h1>
         </div>
         
-        <h2 style="text-align: center; color: white; margin-bottom: 20px; font-size: 20px; font-weight: 600;">Criar Conta</h2>
+        <h2 style="text-align: center; color: white; margin-bottom: 20px; font-size: 20px; font-weight: 600;" th:text="#{register.submit}">Criar Conta</h2>
 
         <div th:if="${error}" class="error-msg" th:text="${error}">
             Erro ao criar conta.
@@ -112,11 +112,11 @@
         <form th:action="@{/register}" method="post" id="registerForm">
             <div class="input-group">
                 <input type="email" name="email" required th:value="${email}">
-                <label>E-mail</label>
+                <label th:text="#{login.email}">E-mail</label>
             </div>
             <div class="input-group">
                 <input type="password" name="password" id="password" required>
-                <label>Senha</label>
+                <label th:text="#{login.password}">Senha</label>
             </div>
             
             <div class="password-requirements">
@@ -129,11 +129,24 @@
                 </ul>
             </div>
 
-            <button type="submit" class="btn" style="width: 100%;">Criar Conta</button>
+            <button type="submit" class="btn" style="width: 100%;" th:text="#{register.submit}">Criar Conta</button>
         </form>
 
         <div class="links">
-            <a th:href="@{/login}">Já tem uma conta? Faça Login</a>
+            <a th:href="@{/login}" th:text="#{register.hasaccount}">Já tem uma conta? Faça Login</a>
+        </div>
+
+        <!-- Language Selector -->
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 25px;">
+            <a href="?lang=pt-BR" title="Português" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="https://flagcdn.com/w40/br.png" alt="PT-BR" style="width: 30px; height: 20px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">
+            </a>
+            <a href="?lang=en" title="English" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="https://flagcdn.com/w40/gb.png" alt="EN" style="width: 30px; height: 20px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">
+            </a>
+            <a href="?lang=es" title="Español" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="https://flagcdn.com/w40/es.png" alt="ES" style="width: 30px; height: 20px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">
+            </a>
         </div>
     </div>
     

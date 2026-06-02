@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geo-Quiz 3D | Desafios Geográficos</title>
+    <title th:text="#{app.title}">Geo-Quiz 3D | Desafios Geográficos</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -80,7 +80,7 @@
                         <span class="text-2xl animate-spin-slow select-none">🌍</span>
                     </div>
                     <h1 class="text-2xl font-extrabold tracking-tight glow-text">GEOQUIZ <span class="font-light text-blue-400">3D</span></h1>
-                    <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-bold border border-blue-500/30">v1.4.0</span>
+                    <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-bold border border-blue-500/30">v1.5.0</span>
                 </div>
 
                 <!-- Mode Selector -->
@@ -93,21 +93,34 @@
                 <!-- Dashboard Toggle -->
                 <button onclick="toggleDashboard()" class="glass p-3 px-6 flex items-center gap-2 hover:bg-white/10 transition-all pointer-events-auto">
                     <span class="text-blue-400">📊</span>
-                    <span class="text-sm font-bold">Estatísticas</span>
+                    <span class="text-sm font-bold" th:text="#{nav.stats}">Estatísticas</span>
                 </button>
 
                 <!-- User Info & Logout -->
                 <div class="glass p-3 px-4 flex items-center gap-3 pointer-events-auto" th:if="${#authorization.expression('isAuthenticated()')}">
                     <span class="text-sm font-bold text-emerald-400" th:text="${#authentication.principal.user.username}">User</span>
-                    <a th:href="@{/logout}" class="text-xs bg-red-500/20 text-red-400 px-3 py-1 border border-red-500/30 rounded-lg font-bold hover:bg-red-500/40 transition-all">Sair</a>
+                    <a th:href="@{/logout}" class="text-xs bg-red-500/20 text-red-400 px-3 py-1 border border-red-500/30 rounded-lg font-bold hover:bg-red-500/40 transition-all" th:text="#{nav.logout}">Sair</a>
                 </div>
             </div>
             
-            <div class="glass p-4 px-6 pointer-events-auto">
-                <div class="flex items-center gap-6">
-                    <div class="text-right">
-                        <p class="text-xs text-gray-400 uppercase tracking-widest font-semibold">Objetivo</p>
-                        <p id="target-display" class="text-lg font-bold text-emerald-400">Carregando...</p>
+            <div class="glass p-3 px-4 pointer-events-auto">
+                <div class="flex items-center gap-4">
+                    <div class="relative group" tabindex="0">
+                        <button class="flex items-center gap-2 text-sm font-bold bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl transition-all border border-white/10">
+                            <img th:src="${#locale.language == 'en' ? 'https://flagcdn.com/w20/gb.png' : (#locale.language == 'es' ? 'https://flagcdn.com/w20/es.png' : 'https://flagcdn.com/w20/br.png')}" class="w-5 rounded-sm">
+                            <span th:text="${#locale.language == 'en' ? 'EN' : (#locale.language == 'es' ? 'ES' : 'PT-BR')}">PT-BR</span>
+                        </button>
+                        <div class="absolute right-0 top-full mt-2 w-32 glass hidden group-hover:block group-focus-within:block rounded-xl overflow-hidden shadow-2xl transition-all z-50">
+                            <a href="?lang=pt-BR" class="flex items-center justify-center gap-3 px-4 py-3 hover:bg-white/10 transition-all text-sm font-bold">
+                                <img src="https://flagcdn.com/w20/br.png" alt="BR" class="w-5 rounded-sm"> PT-BR
+                            </a>
+                            <a href="?lang=en" class="flex items-center justify-center gap-3 px-4 py-3 hover:bg-white/10 transition-all text-sm font-bold">
+                                <img src="https://flagcdn.com/w20/gb.png" alt="UK" class="w-5 rounded-sm"> EN
+                            </a>
+                            <a href="?lang=es" class="flex items-center justify-center gap-3 px-4 py-3 hover:bg-white/10 transition-all text-sm font-bold">
+                                <img src="https://flagcdn.com/w20/es.png" alt="ES" class="w-5 rounded-sm"> ES
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -132,9 +145,9 @@
         <div class="flex items-end justify-between gap-8 pointer-events-none">
             <!-- Histórico (Esquerda) -->
             <div id="history-container" class="glass p-6 w-80 space-y-4 max-h-72 overflow-y-auto custom-scrollbar pointer-events-auto shadow-2xl">
-                <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Histórico de Tentativas</p>
+                <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2" th:text="#{history.title}">Histórico de Tentativas</p>
                 <div id="guess-history" class="space-y-3">
-                    <p class="text-gray-500 text-sm italic">Nenhum palpite ainda.</p>
+                    <p class="text-gray-500 text-sm italic" th:text="#{history.empty}">Nenhum palpite ainda.</p>
                 </div>
             </div>
 
@@ -142,9 +155,9 @@
             <main class="flex-1 max-w-xl pointer-events-auto">
                 <div class="glass p-8 space-y-6 shadow-2xl">
                     <div class="relative">
-                        <label class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2 block">Qual é o seu palpite?</label>
+                        <label class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2 block" th:text="#{guess.label}">Qual é o seu palpite?</label>
                         <div class="relative group">
-                            <input type="text" id="country-search" autocomplete="off" placeholder="Digite o nome de um país..." 
+                            <input type="text" id="country-search" autocomplete="off" th:placeholder="#{guess.placeholder}" 
                                    class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all pointer-events-auto">
                             
                             <div id="autocomplete-list" class="absolute bottom-full left-0 right-0 mb-2 max-h-64 overflow-y-auto glass hidden z-50 pointer-events-auto custom-scrollbar">
@@ -155,10 +168,10 @@
                     </div>
                     
                     <div class="flex gap-4">
-                        <button id="btn-guess" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 p-4 rounded-xl font-bold text-lg shadow-xl shadow-blue-900/20 transition-all transform active:scale-95">
+                        <button id="btn-guess" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 p-4 rounded-xl font-bold text-lg shadow-xl shadow-blue-900/20 transition-all transform active:scale-95" th:text="#{guess.submit}">
                             Confirmar Palpite
                         </button>
-                        <button id="btn-give-up" class="px-6 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/50 rounded-xl font-semibold text-gray-400 hover:text-red-400 transition-all transform active:scale-95">
+                        <button id="btn-give-up" class="px-6 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/50 rounded-xl font-semibold text-gray-400 hover:text-red-400 transition-all transform active:scale-95" th:text="#{guess.giveup}">
                             Desistir
                         </button>
                     </div>
@@ -181,16 +194,16 @@
         <div class="glass p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar scale-95 transition-transform duration-300 transform" id="dashboard-content">
             <div class="flex justify-between items-center mb-8">
                 <div>
-                    <h2 class="text-3xl font-extrabold glow-text">Dashboard do <span class="text-blue-400">Explorador</span></h2>
-                    <p class="text-gray-400">Seu progresso na conquista do mundo</p>
+                    <h2 class="text-3xl font-extrabold glow-text" th:text="#{dashboard.title}">Dashboard do Explorador</h2>
+                    <p class="text-gray-400" th:text="#{dashboard.subtitle}">Seu progresso na conquista do mundo</p>
                 </div>
                 
                 <div class="flex items-center gap-4">
                     <div class="glass flex p-1 gap-1 pointer-events-auto">
-                        <button onclick="changeDashboardFilter('all')" class="db-mode-btn active px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/5">Todos</button>
-                        <button onclick="changeDashboardFilter('classic')" class="db-mode-btn px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/5">Globle</button>
-                        <button onclick="changeDashboardFilter('flaggle')" class="db-mode-btn px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/5">Flaggle</button>
-                        <button onclick="changeDashboardFilter('worldle')" class="db-mode-btn px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/5">Worldle</button>
+                        <button onclick="changeDashboardFilter('all')" class="db-mode-btn active px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/5" th:text="#{mode.all}">Todos</button>
+                        <button onclick="changeDashboardFilter('classic')" class="db-mode-btn px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/5" th:text="#{mode.globle}">Globle</button>
+                        <button onclick="changeDashboardFilter('flaggle')" class="db-mode-btn px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/5" th:text="#{mode.flaggle}">Flaggle</button>
+                        <button onclick="changeDashboardFilter('worldle')" class="db-mode-btn px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/5" th:text="#{mode.worldle}">Worldle</button>
                     </div>
                     <button onclick="toggleDashboard()" class="w-10 h-10 glass flex items-center justify-center hover:bg-red-500/20 transition-all rounded-full pointer-events-auto">✕</button>
                 </div>
@@ -199,22 +212,22 @@
             <!-- Mapa Mundi -->
             <div class="glass p-6 mb-8">
                 <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                    <span class="w-2 h-2 bg-emerald-400 rounded-full"></span> Países Conquistados no Mapa
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full"></span> <span th:text="#{dashboard.map.title}">Países Conquistados no Mapa</span>
                 </h3>
                 <div id="chart-map" class="w-full h-80 bg-white/5 rounded-xl overflow-hidden shadow-inner"></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="glass p-6 text-center">
-                    <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Países Encontrados</p>
+                    <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2" th:text="#{dashboard.stats.found}">Países Encontrados</p>
                     <p id="stat-count" class="text-4xl font-black text-emerald-400">0</p>
                 </div>
                 <div class="glass p-6 text-center">
-                    <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Cobertura Global</p>
+                    <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2" th:text="#{dashboard.stats.coverage}">Cobertura Global</p>
                     <p id="stat-percent" class="text-4xl font-black text-blue-400">0%</p>
                 </div>
                 <div class="glass p-6 text-center">
-                    <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Média de Tentativas</p>
+                    <p class="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2" th:text="#{dashboard.stats.avg}">Média de Tentativas</p>
                     <p id="stat-avg" class="text-4xl font-black text-indigo-400">--</p>
                 </div>
             </div>
@@ -222,13 +235,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="glass p-6">
                     <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span> Distribuição por Continente
+                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span> <span th:text="#{dashboard.charts.continents}">Distribuição por Continente</span>
                     </h3>
                     <div id="chart-continents" class="w-full h-64 bg-white/5 rounded-xl"></div>
                 </div>
                 <div class="glass p-6">
                     <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                        <span class="w-2 h-2 bg-emerald-400 rounded-full"></span> Top 10 Países Mais Acertados
+                        <span class="w-2 h-2 bg-emerald-400 rounded-full"></span> <span th:text="#{dashboard.charts.top}">Top 10 Países Mais Acertados</span>
                     </h3>
                     <div id="chart-top-countries" class="w-full h-64 bg-white/5 rounded-xl"></div>
                 </div>
@@ -244,10 +257,10 @@
                     🎉
                 </div>
                 <div>
-                    <h2 id="modal-title" class="text-2xl font-extrabold glow-text mb-2">Parabéns!</h2>
-                    <p id="modal-message" class="text-gray-300">Você encontrou o país misterioso!</p>
+                    <h2 id="modal-title" class="text-2xl font-extrabold glow-text mb-2" th:text="#{modal.congrats}">Parabéns!</h2>
+                    <p id="modal-message" class="text-gray-300" th:text="#{modal.found}">Você encontrou o país misterioso!</p>
                 </div>
-                <button id="btn-modal-close" class="w-full bg-white/10 hover:bg-white/20 p-4 rounded-xl font-bold transition-all">
+                <button id="btn-modal-close" class="w-full bg-white/10 hover:bg-white/20 p-4 rounded-xl font-bold transition-all" th:text="#{modal.continue}">
                     Continuar Jogando
                 </button>
             </div>

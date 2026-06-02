@@ -77,7 +77,7 @@ public class QuizController {
                 bearing,
                 bearingDegrees,
                 geoService.getProximityColor(distance),
-                guessed.getName(),
+                guessed.getLocalizedName(org.springframework.context.i18n.LocaleContextHolder.getLocale()),
                 countryService.getFlagUrl(guessed.getIsoAlpha2())
         ));
     }
@@ -88,7 +88,7 @@ public class QuizController {
                 .orElseThrow(() -> new RuntimeException("País objetivo não encontrado"));
 
         return ResponseEntity.ok(Map.of(
-                "countryName", target.getName(),
+                "countryName", target.getLocalizedName(org.springframework.context.i18n.LocaleContextHolder.getLocale()),
                 "flagUrl", countryService.getFlagUrl(target.getIsoAlpha2()),
                 "geometryJson", target.getGeometryJson() != null ? target.getGeometryJson() : "{}"
         ));

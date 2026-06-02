@@ -3,7 +3,7 @@
 
 # 🌍 Geo-Quiz 3D
 
-[![Version](https://img.shields.io/badge/version-v1.4.0-blue?style=flat)](https://github.com/caiquenovaes1994/GeoQuiz3D/releases/tag/v1.4.0)
+[![Version](https://img.shields.io/badge/version-v1.5.0-blue?style=flat)](https://github.com/caiquenovaes1994/GeoQuiz3D/releases/tag/v1.5.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-17-ED8B00?style=flat&logo=java&logoColor=white)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.6-6DB33F?style=flat&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
@@ -43,8 +43,9 @@ Identifique o país apenas pela sua silhueta geográfica. Renderizado via SVG di
 ## ✨ Funcionalidades Premium
 
 * **Globo 3D Interativo**: Navegação fluida com zoom e transições cinematográficas suaves entre palpites.
+* **Internacionalização (i18n)**: Jogue no seu idioma preferido (Português, Inglês ou Espanhol) com tradução automática completa da interface, dashboard e motor de busca.
 * **Dashboard do Explorador**: Visualize suas estatísticas globais, conquistas por continente e mapa múndi de países descobertos.
-* **Inteligência Geográfica**: Motor de cálculo baseado nas fórmulas de Haversine e Bearing para precisão milimétrica.
+* **Inteligência Geográfica**: Motor de cálculo baseado nas fórmulas de Haversine e Bearing para precisão milimétrica e busca inteligente ignorando acentos.
 * **Design Futurista**: Interface baseada em *Glassmorphism* com tema Neon/Dark, totalmente responsiva para dispositivos móveis.
 * **Segurança e Autenticação**: Sistema de login robusto utilizando Spring Security com suporte a Login Social via Google (OAuth2).
 * **Persistência de Sessão**: Reinicie jogos instantaneamente e mantenha seu progresso e conta salvos de forma segura.
