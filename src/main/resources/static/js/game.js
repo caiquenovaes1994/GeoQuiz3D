@@ -652,9 +652,15 @@ async function updateDashboardStats() {
 
 function drawCharts(stats) {
     // 1. Mapa Mundi (Geochart)
-    const mapDataArr = [["Country", "Conquered"]];
+    const mapDataArr = [["País", "Acertos"]];
     if (stats.conqueredIsoCodes && stats.conqueredIsoCodes.length > 0) {
-        stats.conqueredIsoCodes.forEach(iso => mapDataArr.push([iso, 1]));
+        const counts = {};
+        stats.conqueredIsoCodes.forEach(iso => {
+            counts[iso] = (counts[iso] || 0) + 1;
+        });
+        Object.keys(counts).forEach(iso => {
+            mapDataArr.push([iso, counts[iso]]);
+        });
     } else {
         mapDataArr.push(["ZZ", 0]); // Dummy para evitar erro se estiver vazio
     }
@@ -664,7 +670,7 @@ function drawCharts(stats) {
         backgroundColor: "transparent",
         datalessRegionColor: "#1f2937",
         defaultColor: "#10b981",
-        colorAxis: { colors: ["#10b981", "#10b981"] },
+        colorAxis: { colors: ["#a7f3d0", "#059669"] }, // Light green to Dark green
         legend: "none",
         keepAspectRatio: true
     });
