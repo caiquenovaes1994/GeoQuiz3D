@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @RestController
@@ -20,10 +23,11 @@ public class CountryController {
 
     @GetMapping
     public List<CountryDTO> getAllCountries() {
+        Locale locale = LocaleContextHolder.getLocale();
         return countryRepository.findAll().stream()
                 .map(c -> new CountryDTO(
                         c.getId(),
-                        c.getName(),
+                        c.getLocalizedName(locale),
                         c.getIsoAlpha2(),
                         countryService.getFlagUrl(c.getIsoAlpha2()),
                         c.getLatitude(),

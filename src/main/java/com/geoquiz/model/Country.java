@@ -32,4 +32,12 @@ public class Country {
 
     @Column(name = "geometry_json", columnDefinition = "TEXT")
     private String geometryJson;
+
+    public String getLocalizedName(java.util.Locale locale) {
+        if (this.isoAlpha2 != null && !this.isoAlpha2.isEmpty()) {
+            java.util.Locale targetLocale = new java.util.Locale("", this.isoAlpha2);
+            return targetLocale.getDisplayCountry(locale);
+        }
+        return this.name;
+    }
 }

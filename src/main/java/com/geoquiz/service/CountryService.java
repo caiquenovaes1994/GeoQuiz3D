@@ -67,7 +67,7 @@ public class CountryService {
         iso2 = iso2.toUpperCase();
         
         // Europa (Europe)
-        if (List.of("AD", "AL", "AM", "AT", "AZ", "BA", "BE", "BG", "BY", "CH", "CY", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GE", "GR", "HR", "HU", "IE", "IS", "IT", "LI", "LT", "LU", "LV", "MC", "MD", "ME", "MK", "MT", "NL", "NO", "PL", "PT", "RO", "RS", "RU", "SE", "SI", "SK", "SM", "UA", "GB", "VA", "XK", "UK", "GB-ENG", "GB-WLS", "GB-SCT", "GB-NIR").contains(iso2)) {
+        if (List.of("AD", "AL", "AM", "AT", "AZ", "BA", "BE", "BG", "BY", "CH", "CY", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GE", "GR", "HR", "HU", "IE", "IS", "IT", "LI", "LT", "LU", "LV", "MC", "MD", "ME", "MK", "MT", "NL", "NO", "PL", "PT", "RO", "RS", "RU", "SE", "SI", "SK", "SM", "UA", "GB", "VA", "XK", "UK", "GB-ENG", "GB-WLS", "GB-SCT", "GB-NIR", "GI", "JE", "GG", "IM", "AX", "FO").contains(iso2)) {
             return "Europe";
         }
         
@@ -77,22 +77,22 @@ public class CountryService {
         }
         
         // América do Norte / Central (North America)
-        if (List.of("AG", "BS", "BB", "BZ", "CA", "CR", "CU", "DM", "DO", "SV", "GD", "GT", "HT", "HN", "JM", "MX", "NI", "PA", "KN", "LC", "VC", "TT", "US", "PR", "GL", "GP", "MQ", "MS", "TC", "VI", "VG", "KY", "BM", "PM", "SX", "MF", "BL", "AW", "CW", "BQ").contains(iso2)) {
+        if (List.of("AG", "BS", "BB", "BZ", "CA", "CR", "CU", "DM", "DO", "SV", "GD", "GT", "HT", "HN", "JM", "MX", "NI", "PA", "KN", "LC", "VC", "TT", "US", "PR", "GL", "GP", "MQ", "MS", "TC", "VI", "VG", "KY", "BM", "PM", "SX", "MF", "BL", "AW", "CW", "BQ", "AI").contains(iso2)) {
             return "North America";
         }
         
         // Ásia (Asia)
-        if (List.of("AF", "BH", "BD", "BT", "BN", "KH", "CN", "IN", "ID", "IR", "IQ", "IL", "JP", "JO", "KZ", "KP", "KR", "KW", "KG", "LA", "LB", "MY", "MV", "MN", "MM", "NP", "OM", "PK", "PS", "PH", "QA", "SA", "SG", "LK", "SY", "TW", "TJ", "TH", "TL", "TR", "TM", "AE", "UZ", "VN", "YE").contains(iso2)) {
+        if (List.of("AF", "BH", "BD", "BT", "BN", "KH", "CN", "IN", "ID", "IR", "IQ", "IL", "JP", "JO", "KZ", "KP", "KR", "KW", "KG", "LA", "LB", "MY", "MV", "MN", "MM", "NP", "OM", "PK", "PS", "PH", "QA", "SA", "SG", "LK", "SY", "TW", "TJ", "TH", "TL", "TR", "TM", "AE", "UZ", "VN", "YE", "HK", "MO", "IO").contains(iso2)) {
             return "Asia";
         }
         
         // Oceania
-        if (List.of("AU", "FJ", "KI", "MH", "FM", "NR", "NZ", "PW", "PG", "WS", "SB", "TO", "TV", "VU", "NC", "PF", "AS", "GU", "MP", "CK", "NU", "WF", "TK").contains(iso2)) {
+        if (List.of("AU", "FJ", "KI", "MH", "FM", "NR", "NZ", "PW", "PG", "WS", "SB", "TO", "TV", "VU", "NC", "PF", "AS", "GU", "MP", "CK", "NU", "WF", "TK", "PN", "NF").contains(iso2)) {
             return "Oceania";
         }
         
         // África (Africa)
-        if (List.of("AO", "BJ", "BW", "BF", "BI", "CV", "CM", "CF", "TD", "KM", "CD", "CG", "CI", "DJ", "EG", "GQ", "ER", "SZ", "ET", "GA", "GM", "GH", "GN", "GW", "KE", "LS", "LR", "LY", "MG", "MW", "ML", "MR", "MU", "MA", "MZ", "NA", "NE", "NG", "RW", "ST", "SN", "SC", "SL", "SO", "ZA", "SS", "SD", "TZ", "TG", "TN", "UG", "ZM", "ZW", "YT", "RE", "SH", "EH").contains(iso2)) {
+        if (List.of("AO", "BJ", "BW", "BF", "BI", "CV", "CM", "CF", "TD", "KM", "CD", "CG", "CI", "DJ", "EG", "GQ", "ER", "SZ", "ET", "GA", "GM", "GH", "GN", "GW", "KE", "LS", "LR", "LY", "MG", "MW", "ML", "MR", "MU", "MA", "MZ", "NA", "NE", "NG", "RW", "ST", "SN", "SC", "SL", "SO", "ZA", "SS", "SD", "TZ", "TG", "TN", "UG", "ZM", "ZW", "YT", "RE", "SH", "EH", "DZ").contains(iso2)) {
             return "Africa";
         }
         

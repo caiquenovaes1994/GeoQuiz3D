@@ -6,6 +6,7 @@ let currentGameMode = 'classic';
 let allCountries = [];
 let userGuesses = [];
 let usedCountryIds = new Set();
+let userInteracted = false;
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
@@ -29,6 +30,11 @@ async function init() {
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.rotateSpeed = 0.5;
+    
+    // Parar rotação automática ao interagir
+    controls.addEventListener('start', () => {
+        userInteracted = true;
+    });
 
     // Luzes
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -124,10 +130,11 @@ function setupAutocomplete() {
             return;
         }
 
+        const normalizedVal = val.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
         const filtered = allCountries.filter(c => 
             !usedCountryIds.has(c.id) && (
-                c.name.toLowerCase().includes(val) || 
-                c.iso2.toLowerCase().includes(val)
+                c.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(normalizedVal) || 
+                c.iso2.toLowerCase().includes(normalizedVal)
             )
         ).slice(0, 10);
         
@@ -163,7 +170,6 @@ async function selectRandomTarget() {
     if (allCountries.length > 0) {
         const randomIndex = Math.floor(Math.random() * allCountries.length);
         targetCountryId = allCountries[randomIndex].id;
-        document.getElementById('target-display').innerText = "País Misterioso";
         console.log("Dica de Dev - Alvo:", allCountries[randomIndex].name);
         
         // Carregar detalhes (bandeira/geometria) logo no início
@@ -237,6 +243,9 @@ function setMode(mode) {
             if (mode === 'flaggle') flaggleBox.classList.remove('hidden');
             if (mode === 'worldle') worldleBox.classList.remove('hidden');
         }
+        
+        // Reset the game and select a new target when changing mode
+        startNewGame();
     }, 300);
 }
 
@@ -542,8 +551,8 @@ function animate() {
     TWEEN.update();
     controls.update();
     
-    // Auto-rotação suave se não estiver interagindo
-    if (!controls.active) {
+    // Auto-rotação suave se não houver interação manual
+    if (!userInteracted) {
         globe.rotation.y += 0.001;
     }
     
