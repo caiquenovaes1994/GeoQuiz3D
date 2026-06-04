@@ -2,7 +2,6 @@ package com.geoquiz.service;
 
 import com.geoquiz.model.User;
 import com.geoquiz.repository.UserRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,17 +14,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @PostConstruct
-    public void init() {
-        if (userRepository.count() == 0) {
-            User user = new User();
-            user.setUsername("player");
-            user.setEmail("player@geoquiz.local");
-            user.setPassword(passwordEncoder.encode("p@ssword"));
-            user.setRoles(Set.of("ROLE_USER"));
-            userRepository.save(user);
-        }
-    }
+
 
     public void registerUser(String email, String password) throws IllegalArgumentException {
         if (userRepository.findByEmail(email).isPresent()) {
