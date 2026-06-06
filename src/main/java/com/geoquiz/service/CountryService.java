@@ -234,6 +234,12 @@ public class CountryService {
             return "https://flagcdn.com/w640/tw.png";
         }
         
+        // Correção para a Turquia: "tr.png" é comumente bloqueado por AdBlockers (tracking pixel)
+        // Usando versão local renomeada para evitar restrições de hotlinking da Wikimedia.
+        if (code.equals("tr") || code.contains("turkey")) {
+            return "/images/flags/turkey.png";
+        }
+        
         return "https://flagcdn.com/w640/" + code + ".png";
     }
 
